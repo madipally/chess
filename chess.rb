@@ -25,4 +25,12 @@ class Chess
     PIECES.include?(piece.downcase) ? true : false
   end
   
+  def validate_move(move)
+     col = move[0].downcase
+     row = move[1..move.length].to_i
+	 
+     raise "Invalid row #{row} at #{move}" if validate_pos?(row,'a') == false
+     raise "Invalid column #{col} at #{move}" if validate_pos?(1,col) == false
+  end
+  
 end

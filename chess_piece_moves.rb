@@ -9,7 +9,8 @@ class ChessPieceMoves < Chess
   end
   
   def piece_move(piece,pos)
-    
+     puts "erer"
+	 puts pos
      col = pos[0].downcase
      row = pos[1..pos.length].to_i
      
