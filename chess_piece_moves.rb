@@ -2,6 +2,7 @@
 require 'benchmark'
 require_relative 'chess'
 
+
 class ChessPieceMoves < Chess
   
   def initialize
@@ -9,8 +10,6 @@ class ChessPieceMoves < Chess
   end
   
   def piece_move(piece,pos)
-     puts "erer"
-	 puts pos
      col = pos[0].downcase
      row = pos[1..pos.length].to_i
      
@@ -52,17 +51,21 @@ class ChessPieceMoves < Chess
 end
 
 
-
-time = Benchmark.measure do
-  piece = ARGV[0].downcase
-  move = ARGV[1]
-
-  print steps=ChessPieceMoves.new.piece_move(piece,move)
+if __FILE__ == $0
+  if !ARGV.empty? 
+	  piece = ARGV[0].downcase
+	  move = ARGV[1]
+	  
+	  raise "Invalid input" if piece.nil? || move.nil? 
+	  
+	  obj = ChessPieceMoves.new
+      raise "Invalid piece #{piece}" if obj.validate_piece(piece) == false
+	  obj.validate_move(move)
+	  print steps=obj.piece_move(piece,move) 
+  else
+	puts "Please provide input"   
+  end  
 end
-
-puts time
-
-
 
 
 

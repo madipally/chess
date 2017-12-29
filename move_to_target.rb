@@ -12,7 +12,12 @@ class MoveToTarget < Chess
   
   def move_to_target(piece,pos,target,original_pos)
   
-     @moves << pos
+     	 
+	 raise "Invalid piece #{piece}" if validate_piece(piece) == false
+	 validate_move(pos)
+	 validate_move(target)
+	 
+	 @moves << pos
      @moves,stop = move_piece(piece,pos,target)
 
      @all_moves << @moves
@@ -165,56 +170,69 @@ class MoveToTarget < Chess
   end
 end
 
+def validate_steps(obj,steps,args)
 
-time = Benchmark.measure do
-  
-     piece = ARGV[0].downcase
-     pos = ARGV[1]
-     target = ARGV[2]
+     piece = args[0].downcase
+	 pos = args[1]
+	 target = args[2]
 	 
-	 raise "Invalid input" if piece.nil? || pos.nil? || target.nil?
+	 steps.reverse!
+	 moves = []
+
+	 steps.each do |step|
+	   if step == pos
+		 break
+	   else
+		 moves << step
+	   end
+	 end
+	 moves.reverse!
 	 
-	 obj = MoveToTarget.new
-    
-     raise "Invalid piece #{piece}" if obj.validate_piece(piece) == false
-     obj.validate_move(pos)
-	 obj.validate_move(target)
-	 
-     steps = obj.move_to_target(piece,pos,target,pos)
-  
-     steps.reverse!
-     moves = []
-     steps.each do |step|
-       if step == pos
-         break
-       else
-         moves << step
-       end
-     end
-     moves.reverse!
-	 if !ARGV[3].nil?
-		 opponent_piecs_pos = ARGV[3].split(',')
+	 if !args[3].nil?
+		 opponent_piecs_pos = args[3].split(',')
+		 
 		 opponent_piecs_pos.each do |pos|
 		   obj.validate_move(pos)
 		 end
+		 
 		 opp_array = opponent_piecs_pos.inject([]) do |opp_array,elem|
 		  opp_array << elem if moves.include?(elem)
 		  opp_array
 		 end
-		 opp_array.sort!
 		 
-		 if opp_array.size>0
-		   puts  "Captured the opponent at #{opp_array[0]} while moving the #{piece} from #{pos} to #{target} in #{moves}  "
+		 opp_array.sort!
+		 if opp_array.size > 0
+			return opp_array,opponent = true,moves
 		 else
-	       puts "moved the #{piece} in #{moves.size} steps from #{pos}  to #{target} in #{moves} steps "	
-         end
+			return moves,opponent = false,nil
+		 end		
 	 else
-	     puts "moved the #{piece} in #{moves.size} steps from #{pos}  to #{target} in #{moves} steps "		 
+	    return moves,opponent = false,nil
 	end 
-     #puts elem
 end
 
-puts time
+if __FILE__ == $0
+  if !ARGV.empty?
+	 piece = ARGV[0].downcase
+	 pos = ARGV[1]
+	 target = ARGV[2]
+	 
+	 raise "Invalid input" if piece.nil? || pos.nil? || target.nil?
+	 
+	 obj = MoveToTarget.new
+	
+	 steps = obj.move_to_target(piece,pos,target,pos)
+	 result,opponent,moves = validate_steps(obj,steps,ARGV)
+
+	 if opponent
+	   puts  "Captured the opponent at #{result[0]} while moving the #{piece} from #{pos} to #{target} in #{moves}  "
+	 else
+	   puts "moved the #{piece} in #{result.size} steps from #{pos}  to #{target} in #{result} steps "	
+	 end
+  else
+	puts "Please provide input" 		
+  end
+end	
 
 
 
