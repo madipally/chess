@@ -1,4 +1,4 @@
-require_relative '../chess/move_to_target.rb'
+require_relative '../move_to_target.rb'
 
 describe MoveToTarget do
 

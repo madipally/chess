@@ -1,4 +1,4 @@
-require_relative '../chess/chess_piece_moves'
+require_relative '../chess_piece_moves'
 
 describe ChessPieceMoves do
 
